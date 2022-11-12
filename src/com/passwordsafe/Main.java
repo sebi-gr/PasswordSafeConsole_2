@@ -1,6 +1,6 @@
 package com.passwordsafe;
 
-import com.passwordsafe.dataLayer.FileDataSource;
+import com.passwordsafe.DataLayer.FileDataSource;
 import com.passwordsafe.observer.PasswordPublisher;
 import com.passwordsafe.observer.ResetPasswordSubscriber;
 import com.passwordsafe.observer.WrongPasswordSubscriber;
@@ -21,7 +21,10 @@ public class Main {
         boolean abort = false;
         boolean locked = true;
         Scanner read = new Scanner(System.in);
-        publisher.addSubscriber(new WrongPasswordSubscriber());
+        WrongPasswordSubscriber wrongPasswordSubscriber = new WrongPasswordSubscriber();
+        publisher.addSubscriber(wrongPasswordSubscriber);
+        ResetPasswordSubscriber resetPasswordSubscriber = new ResetPasswordSubscriber();
+        publisher.addSubscriber(resetPasswordSubscriber);
         while (!abort) {
             System.out.println("Enter master (1), show all (2), show single (3), add (4), delete(5), set new master (6), Abort (0)");
             int input = read.nextInt();
@@ -39,7 +42,7 @@ public class Main {
                         passwordSafeEngine = new PasswordSafeEngine(new FileDataSource("./passwords.pw", cipherFacility), cipherFacility);
                         System.out.println("unlocked");
                     } else {
-                        publisher.notify("master password did not match ! Failed to unlock.");
+                        publisher.notify(wrongPasswordSubscriber, "master password did not match ! Failed to unlock.");
                     }
                     break;
                 }
@@ -100,6 +103,7 @@ public class Main {
                     }
                     // The directory is now empty or this is a file so delete it
                     oldPasswords.delete();
+                    publisher.notify(resetPasswordSubscriber, "the master password has been reset");
                     break;
                 }
                 default:
