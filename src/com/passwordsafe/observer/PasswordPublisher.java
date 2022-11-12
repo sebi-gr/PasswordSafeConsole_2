@@ -15,9 +15,9 @@ public class PasswordPublisher {
         subcribers.remove(subscriber);
     }
 
-    public void notify(String message) {
+    public void notify(IPasswordSubscriber observer, String message) {
         for (IPasswordSubscriber subscriber : subcribers) {
-            subscriber.update(message);
+            subscriber.update(observer, message);
         }
     }
 }
