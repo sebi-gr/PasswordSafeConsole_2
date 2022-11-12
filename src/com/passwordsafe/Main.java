@@ -1,5 +1,7 @@
 package com.passwordsafe;
 
+import com.passwordsafe.DataLayer.FileDataSource;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -28,7 +30,8 @@ public class Main {
                     String masterPw = read.next();
                     locked = !masterRepository.MasterPasswordIsEqualTo(masterPw);
                     if (!locked) {
-                        passwordSafeEngine = new PasswordSafeEngine("./passwords.pw", new CipherFacility(masterPw));
+                        CipherFacility cipherFacility = new CipherFacility(masterPw);
+                        passwordSafeEngine = new PasswordSafeEngine(new FileDataSource("./passwords.pw", cipherFacility), cipherFacility);
                         System.out.println("unlocked");
                     } else {
                         System.out.println("master password did not match ! Failed to unlock.");
